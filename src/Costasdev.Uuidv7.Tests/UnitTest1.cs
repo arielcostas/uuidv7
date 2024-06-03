@@ -1,4 +1,4 @@
-namespace Costasdev.Uuidv7.Tests;
+namespace Costasdev.Uuid7.Tests;
 
 public class UnitTest1
 {
