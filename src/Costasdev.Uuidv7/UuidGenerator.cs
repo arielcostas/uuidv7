@@ -18,8 +18,8 @@ namespace Costasdev.Uuidv7
 			// Overwrite the first 48 bits with the current time in milliseconds since Unix epoch
 			var millis = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-			int millisLow = (int)millis;
-			short millisHigh = (short)(millis >> 32);
+			Int32 millisLow = (int)millis;
+			Int16 millisHigh = (short)(millis >> 32);
 
 			if (BitConverter.IsLittleEndian)
 			{
