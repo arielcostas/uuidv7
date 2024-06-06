@@ -24,7 +24,7 @@ jobs:
       - name: Test with dotnet
         run: dotnet test --configuration Release ./src/Costasdev.Uuidv7.Tests/Costasdev.Uuidv7.Tests.csproj
       - name: Preserve artifact for release
-        uses: actions/upload-artifact@v4.0.0
+        uses: actions/upload-artifact@v4.3.3
         with:
           name: release
           path: src/Costasdev.Uuidv7/bin/Release/netstandard2.0/Costasdev.Uuidv7.dll
@@ -41,7 +41,7 @@ jobs:
         with:
           dotnet-version: 8.0.X
       - name: Download artifact
-        uses: actions/download-artifact@v4.0.0
+        uses: actions/download-artifact@v4.1.7
         with:
           name: release
           path: src/Costasdev.Uuidv7/bin/Release/netstandard2.0
