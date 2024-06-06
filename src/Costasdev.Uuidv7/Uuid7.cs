@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 
 namespace Costasdev.Uuidv7
 {
-    public struct Uuid7
+    [Serializable]
+    public struct Uuid7 : IEquatable<Uuid7>, IComparable<Uuid7>
     {
         /// <summary>
         /// Little-endian timestamp in milliseconds since Unix epoch
@@ -33,18 +35,18 @@ namespace Costasdev.Uuidv7
             {
                 throw new ArgumentOutOfRangeException(nameof(_randomPart), "Random part must be 10 bytes long");
             }
-            
+
             if (randomPart[0] >> 4 != 7)
             {
                 throw new ArgumentOutOfRangeException(nameof(_randomPart), "Version number must be 7");
             }
-            
+
             // Check variant is 8, 9, A or B
             if ((randomPart[2] >> 6) != 2)
             {
                 throw new ArgumentOutOfRangeException(nameof(_randomPart), "Variant number must be 10");
             }
-            
+
             _timePart = timePart;
             _randomPart = randomPart;
         }
@@ -93,7 +95,7 @@ namespace Costasdev.Uuidv7
                 randomBytes
             );
         }
-        
+
         public static Uuid7 Parse(string uuid)
         {
             if (uuid == null)
@@ -131,10 +133,14 @@ namespace Costasdev.Uuidv7
 
             return new Uuid7(
                 ((long)millisHigh << 32) | (uint)millisLow,
-                new byte[] { bytes[6], bytes[7], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15] }
+                new byte[]
+                {
+                    bytes[6], bytes[7], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14],
+                    bytes[15]
+                }
             );
         }
-        
+
         public static bool TryParse(string uuid, out Uuid7 result)
         {
             try
@@ -147,6 +153,21 @@ namespace Costasdev.Uuidv7
                 result = default;
                 return false;
             }
+        }
+
+        public bool Equals(Uuid7 other)
+        {
+            return _timePart == other._timePart && _randomPart.SequenceEqual(other._randomPart);
+        }
+
+        /// <summary>
+        /// Compares the UUID to another UUID, returning a value indicating whether the current UUID's timestamp is less than, equal to or greater than the other UUID's timestamp
+        /// </summary>
+        /// <param name="other">The UUID to compare to</param>
+        /// <returns>-1 if the current UUID was generated before the other UUID, 0 if they were generated at the same time, 1 if the current UUID was generated after the other UUID</returns>
+        public int CompareTo(Uuid7 other)
+        {
+            return _timePart.CompareTo(other._timePart);
         }
 
         /// <summary>
