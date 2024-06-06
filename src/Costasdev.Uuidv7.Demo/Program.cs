@@ -1,7 +1,7 @@
 ﻿using Costasdev.Uuidv7;
 
 Console.WriteLine("How many UUIDs do you want to generate?");
-var count = int.Parse(Console.ReadLine());
+var count = int.Parse(Console.ReadLine() ?? "0");
 
 for (int i = 0; i < count; i++)
 {

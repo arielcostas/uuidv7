@@ -22,7 +22,7 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
       - name: Test with dotnet
-        run: dotnet test --configuration Release .\src\Costasdev.Uuidv7.Tests\Costasdev.Uuidv7.Tests.csproj
+        run: dotnet test --configuration Release ./src/Costasdev.Uuidv7.Tests/Costasdev.Uuidv7.Tests.csproj
       - name: Preserve artifact for release
         uses: actions/upload-artifact@v4.0.0
         with:
