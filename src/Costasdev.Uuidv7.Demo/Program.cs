@@ -5,6 +5,10 @@ var count = int.Parse(Console.ReadLine());
 
 for (int i = 0; i < count; i++)
 {
-	Console.WriteLine(Uuid7.NewUuid().ToString());
+	var uuid = Uuid7.NewUuid();
+	Console.WriteLine(uuid.ToString());
+	var parsed = Uuid7.TryParse(uuid.ToString(), out var result);
+	Console.WriteLine(parsed ? "Parsed successfully" : "Failed to parse");
+	Console.WriteLine("Parsed UUID: " + result);
 	Task.Delay(1000).Wait();
 }

@@ -93,6 +93,61 @@ namespace Costasdev.Uuidv7
                 randomBytes
             );
         }
+        
+        public static Uuid7 Parse(string uuid)
+        {
+            if (uuid == null)
+            {
+                throw new ArgumentNullException(nameof(uuid));
+            }
+
+            if (uuid.Length != 36)
+            {
+                throw new FormatException("UUID must be 36 characters long");
+            }
+
+            var parts = uuid.Split('-');
+            if (parts.Length != 5)
+            {
+                throw new FormatException("UUID must contain 5 parts separated by hyphens");
+            }
+
+            var hex = string.Concat(parts);
+            var bytes = new byte[16];
+            for (var i = 0; i < 16; i++)
+            {
+                bytes[i] = byte.Parse(hex.Substring(i * 2, 2), System.Globalization.NumberStyles.HexNumber);
+            }
+
+            // Invert the byte order if the system is little-endian (most significant byte first)
+            var millisLow = BitConverter.ToInt32(bytes, 2);
+            var millisHigh = BitConverter.ToInt16(bytes, 0);
+
+            if (BitConverter.IsLittleEndian)
+            {
+                millisLow = IPAddress.NetworkToHostOrder(millisLow);
+                millisHigh = IPAddress.NetworkToHostOrder(millisHigh);
+            }
+
+            return new Uuid7(
+                ((long)millisHigh << 32) | (uint)millisLow,
+                new byte[] { bytes[6], bytes[7], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15] }
+            );
+        }
+        
+        public static bool TryParse(string uuid, out Uuid7 result)
+        {
+            try
+            {
+                result = Parse(uuid);
+                return true;
+            }
+            catch (Exception)
+            {
+                result = default;
+                return false;
+            }
+        }
 
         /// <summary>
         /// Converts the UUID to a string representation
