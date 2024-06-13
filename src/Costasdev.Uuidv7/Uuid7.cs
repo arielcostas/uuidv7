@@ -211,9 +211,9 @@ namespace Costasdev.Uuidv7
         public string AsString(bool uppercase = false, bool includeHyphens = true)
         {
             var hex = BitConverter.ToString(AsByteArray()).Replace("-", "");
-            if (uppercase)
+            if (!uppercase)
             {
-                hex = hex.ToUpperInvariant();
+                hex = hex.ToLowerInvariant();
             }
 
             if (!includeHyphens) return hex;
