@@ -12,7 +12,7 @@ namespace Costasdev.Uuidv7
         /// <summary>
         /// Little-endian timestamp in milliseconds since Unix epoch
         /// </summary>
-        private long _timePart;
+        private ulong _timePart;
 
         /// <summary>
         /// The 10 bytes containing version number, variant and random data
@@ -25,13 +25,8 @@ namespace Costasdev.Uuidv7
         /// <param name="timePart">The timestamp in milliseconds since Unix epoch</param>
         /// <param name="randomPart">A 10 byte array containing the version number, variant and random data</param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        private Uuid7(long timePart, byte[] randomPart)
+        public Uuid7(ulong timePart, byte[] randomPart)
         {
-            if (timePart < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(_timePart), "Time part must be a non-negative number");
-            }
-
             if (randomPart.Length != 10)
             {
                 throw new ArgumentOutOfRangeException(nameof(_randomPart), "Random part must be 10 bytes long");
@@ -43,7 +38,7 @@ namespace Costasdev.Uuidv7
             }
 
             // Check variant is 8, 9, A or B
-            if ((randomPart[2] >> 6) != 2)
+            if (randomPart[2] >> 6 != 2)
             {
                 throw new ArgumentOutOfRangeException(nameof(_randomPart), "Variant number must be 10");
             }
@@ -92,7 +87,7 @@ namespace Costasdev.Uuidv7
             randomBytes[2] = (byte)((randomBytes[8] & 0x3F) | 0x80);
 
             return new Uuid7(
-                dateTimeOffset.ToUnixTimeMilliseconds(),
+                (ulong)dateTimeOffset.ToUnixTimeMilliseconds(),
                 randomBytes
             );
         }
@@ -143,7 +138,7 @@ namespace Costasdev.Uuidv7
             }
 
             return new Uuid7(
-                ((long)millisHigh << 32) | (uint)millisLow,
+                (ulong)((long)millisHigh << 32) | (uint)millisLow,
                 randomPart
             );
         }
@@ -164,7 +159,7 @@ namespace Costasdev.Uuidv7
 
         public DateTimeOffset GetDateTimeOffset()
         {
-            return DateTimeOffset.FromUnixTimeMilliseconds(_timePart);
+            return DateTimeOffset.FromUnixTimeMilliseconds((long)_timePart);
         }
 
         public bool Equals(Uuid7 other)
@@ -199,10 +194,10 @@ namespace Costasdev.Uuidv7
             Buffer.BlockCopy(BitConverter.GetBytes(millisHigh), 0, result, 0, 2);
             Buffer.BlockCopy(BitConverter.GetBytes(millisLow), 0, result, 2, 4);
             Buffer.BlockCopy(_randomPart, 0, result, 6, 10);
-            
+
             return result;
         }
-        
+
         public override string ToString()
         {
             return AsString();
@@ -217,7 +212,7 @@ namespace Costasdev.Uuidv7
             }
 
             if (!includeHyphens) return hex;
-            
+
             var builder = new StringBuilder(hex).Insert(20, '-').Insert(16, '-').Insert(12, '-').Insert(8, '-');
             return builder.ToString();
         }
