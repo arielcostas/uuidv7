@@ -2,16 +2,73 @@
 
 C# implementation of UUID v7 per [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562#name-uuid-version-7). Project under heavy development, not ready for production use.
 
-## To-do list
+## Basic usage
 
-See [GitHub issues](https://github.com/arielcostas/uuidv7/issues) for more information. Scratchpad:
+The following examples demonstrate how to use the `Uuidv7` library.
 
-- [X] Implement UUID v7 generation
-- [ ] Implement returning UUID as byte array
-- [X] Implement returning UUID as string
-- [ ] Implement parsing UUID from byte array
-- [ ] Implement parsing UUID from string
-- [ ] Implement UUID v7 validation
+### Instantiation
+
+```csharp
+using System;
+using Costasdev.Uuidv7;
+
+// Create a new UUID for the current time
+var uuid1 = Uuidv7.NewUuid();
+
+// Create a new UUID for a specific DateTime
+var dateTime = new DateTime(2024, 06, 13, 10, 08, 15, DateTimeKind.Utc);
+var uuid2 = Uuidv7.NewUuid(dateTime);
+
+// Create a new UUID for a specific DateTimeOffset
+var dateTimeOffset = new DateTimeOffset(2024, 06, 13, 10, 08, 15, TimeSpan.Zero);
+var uuid3 = Uuidv7.NewUuid(dateTimeOffset);
+```
+
+### String representation
+
+The `Uuidv7` class has the `ToString()` method, which returns the UUID in lowercase and with hyphens. The `AsString()` method allows you to customise the output of the UUID, specifying whether it should be in lowercase or uppercase, and whether it should have hyphens or not.
+
+```csharp
+using System;
+using Costasdev.Uuidv7;
+
+var uuid = Uuidv7.NewUuid();
+
+// Default ToString() method returns the UUID in lowercase and with hyphens
+Console.WriteLine(uuid);
+// Output: 7f1b3b6e-7b1b-7f1b-3b6e-7b1b7f1b3b6e
+
+// AsString() method allows you to specify whether the UUID should be in lowercase or uppercase, and whether it should have hyphens
+// AsString(bool uppercase, bool hyphens)
+Console.WriteLine(uuid2.AsString(true)); // Output: 7F1B3B6E-7B1B-7F1B-3B6E-7B1B7F1B3B6E
+Console.WriteLine(uuid2.AsString(false, false)); // Output: 7f1b3b6e7b1b7f1b3b6e7b1b7f1b3b6e
+```
+
+### Parsing
+
+Parsing supports both the standard UUID format (with hyphens) and the format without hyphens, as well as both lowercase and uppercase characters.
+
+```csharp
+using System;
+
+const string uuidString = "7f1b3b6e-7b1b-7f1b-3b6e-7b1b7f1b3b6e";
+
+// Parse a UUID from a string
+try {
+	var uuid = Uuidv7.Parse(uuidString);
+} catch (FormatException e) {
+	Console.WriteLine(e.Message);
+}
+
+// TryParse a UUID from a string, returns a boolean indicating success
+var validUuid = Uuidv7.TryParse(uuidString, out var uuid);
+
+if (validUuid) {
+	Console.WriteLine(uuid);
+} else {
+	Console.WriteLine("Invalid UUID");
+}
+```
 
 ## Licence
 
