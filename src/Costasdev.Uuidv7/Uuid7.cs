@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -99,12 +99,12 @@ namespace Costasdev.Uuidv7
 
         public static Uuid7 Parse(string uuid)
         {
-            if (uuid == null)
+            if (uuid is null || uuid.Trim() == string.Empty)
             {
-                throw new ArgumentNullException(nameof(uuid));
+                throw new ArgumentException(nameof(uuid));
             }
 
-            if (uuid.Length != 36)
+            if (uuid.Length != 36 || uuid.Length != 32)
             {
                 throw new FormatException("UUID must be 36 characters long");
             }
@@ -114,11 +114,11 @@ namespace Costasdev.Uuidv7
             // Support UUIDs with or without hyphens
             if (uuid.Length == 36)
             {
-            var parts = uuid.Split('-');
-            if (parts.Length != 5)
-            {
-                throw new FormatException("UUID must contain 5 parts separated by hyphens");
-            }
+                var parts = uuid.Split('-');
+                if (parts.Length != 5)
+                {
+                    throw new FormatException("UUID must contain 5 parts separated by hyphens");
+                }
 
                 uuid = string.Concat(parts);
             }
@@ -162,6 +162,11 @@ namespace Costasdev.Uuidv7
             }
         }
 
+        public DateTimeOffset GetDateTimeOffset()
+        {
+            return DateTimeOffset.FromUnixTimeMilliseconds(_timePart);
+        }
+
         public bool Equals(Uuid7 other)
         {
             return _timePart == other._timePart && _randomPart.SequenceEqual(other._randomPart);
@@ -177,13 +182,9 @@ namespace Costasdev.Uuidv7
             return _timePart.CompareTo(other._timePart);
         }
 
-        /// <summary>
-        /// Converts the UUID to a string representation
-        /// </summary>
-        /// <returns>The UUID as a string in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</returns>
-        public override string ToString()
+        public byte[] AsByteArray()
         {
-            var uuid = new byte[16];
+            var result = new byte[16];
 
             // Invert the byte order if the system is little-endian (most significant byte first)
             var millisLow = (int)_timePart;
@@ -195,13 +196,30 @@ namespace Costasdev.Uuidv7
                 millisHigh = IPAddress.HostToNetworkOrder(millisHigh);
             }
 
-            Buffer.BlockCopy(BitConverter.GetBytes(millisHigh), 0, uuid, 0, 2);
-            Buffer.BlockCopy(BitConverter.GetBytes(millisLow), 0, uuid, 2, 4);
-            Buffer.BlockCopy(_randomPart, 0, uuid, 6, 10);
+            Buffer.BlockCopy(BitConverter.GetBytes(millisHigh), 0, result, 0, 2);
+            Buffer.BlockCopy(BitConverter.GetBytes(millisLow), 0, result, 2, 4);
+            Buffer.BlockCopy(_randomPart, 0, result, 6, 10);
+            
+            return result;
+        }
+        
+        public override string ToString()
+        {
+            return AsString();
+        }
 
-            var hex = BitConverter.ToString(uuid).Replace("-", "");
-            return
-                $"{hex.Substring(0, 8)}-{hex.Substring(8, 4)}-{hex.Substring(12, 4)}-{hex.Substring(16, 4)}-{hex.Substring(20)}";
+        public string AsString(bool uppercase = false, bool includeHyphens = true)
+        {
+            var hex = BitConverter.ToString(AsByteArray()).Replace("-", "");
+            if (uppercase)
+            {
+                hex = hex.ToUpperInvariant();
+            }
+
+            if (!includeHyphens) return hex;
+            
+            var builder = new StringBuilder(hex).Insert(20, '-').Insert(16, '-').Insert(12, '-').Insert(8, '-');
+            return builder.ToString();
         }
     }
 }
