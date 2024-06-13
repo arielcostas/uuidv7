@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Costasdev.Uuidv7
 {
@@ -108,22 +109,32 @@ namespace Costasdev.Uuidv7
                 throw new FormatException("UUID must be 36 characters long");
             }
 
+            uuid = uuid.Trim().ToLowerInvariant();
+
+            // Support UUIDs with or without hyphens
+            if (uuid.Length == 36)
+            {
             var parts = uuid.Split('-');
             if (parts.Length != 5)
             {
                 throw new FormatException("UUID must contain 5 parts separated by hyphens");
             }
 
-            var hex = string.Concat(parts);
+                uuid = string.Concat(parts);
+            }
+
             var bytes = new byte[16];
             for (var i = 0; i < 16; i++)
             {
-                bytes[i] = byte.Parse(hex.Substring(i * 2, 2), System.Globalization.NumberStyles.HexNumber);
+                bytes[i] = byte.Parse(uuid.Substring(i * 2, 2), System.Globalization.NumberStyles.HexNumber);
             }
 
             // Invert the byte order if the system is little-endian (most significant byte first)
             var millisLow = BitConverter.ToInt32(bytes, 2);
             var millisHigh = BitConverter.ToInt16(bytes, 0);
+
+            var randomPart = new byte[10];
+            Buffer.BlockCopy(bytes, 6, randomPart, 0, 10);
 
             if (BitConverter.IsLittleEndian)
             {
@@ -133,11 +144,7 @@ namespace Costasdev.Uuidv7
 
             return new Uuid7(
                 ((long)millisHigh << 32) | (uint)millisLow,
-                new byte[]
-                {
-                    bytes[6], bytes[7], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14],
-                    bytes[15]
-                }
+                randomPart
             );
         }
 
