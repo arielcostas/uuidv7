@@ -1,10 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <OutputType>Library</OutputType>
     <RootNamespace>Costasdev.Uuidv7</RootNamespace>
+    
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
 
     <PackageId>Costasdev.Uuidv7</PackageId>
     <Authors>Ariel Costas Guerrero</Authors>
@@ -16,6 +20,10 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>uuid uuidv7 rfc9562</PackageTags>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>
