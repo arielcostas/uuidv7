@@ -1,6 +1,32 @@
 # uuidv7
 
-C# implementation of UUID v7 per [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562#name-uuid-version-7). Project under heavy development, not ready for production use.
+![Build status](https://img.shields.io/github/actions/workflow/status/arielcostas/uuidv7/build.yml?branch=main&style=for-the-badge)
+![Nuget version](https://img.shields.io/nuget/v/Costasdev.Uuidv7?style=for-the-badge)
+![Licence](https://img.shields.io/github/license/arielcostas/uuidv7?style=for-the-badge)
+
+C# implementation of UUID version 7 per [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562#name-uuid-version-7).
+
+## Setup
+
+The `Uuidv7` library is available as a NuGet package on the NuGet Gallery. You can install it using the following command with the .NET CLI:
+
+```bash
+dotnet add package Costasdev.Uuidv7
+```
+
+Alternatively, you can install it using Visual Studio's NuGet Package Manager.
+
+```pwsh
+Install-Package Costasdev.Uuidv7
+```
+
+Or you can add it to your project's `.csproj` file:
+
+```xml
+<ItemGroup>
+	<PackageReference Include="Costasdev.Uuidv7" Version="CHANGEME THE LATEST" />
+</ItemGroup>
+```
 
 ## Basic usage
 

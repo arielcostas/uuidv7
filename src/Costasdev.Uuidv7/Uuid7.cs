@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Costasdev.Uuidv7
 {
+    /// <summary>
+    /// Represents a Universally Unique Identifier (UUID) with version 7, as defined in RFC 9562
+    /// </summary>
     [Serializable]
     public struct Uuid7 : IEquatable<Uuid7>, IComparable<Uuid7>
     {
@@ -31,7 +34,6 @@ namespace Costasdev.Uuidv7
             {
                 throw new ArgumentOutOfRangeException(nameof(_randomPart), "Random part must be 10 bytes long");
             }
-
             if (randomPart[0] >> 4 != 7)
             {
                 throw new ArgumentOutOfRangeException(nameof(_randomPart), "Version number must be 7");
@@ -92,6 +94,14 @@ namespace Costasdev.Uuidv7
             );
         }
 
+        /// <summary>
+        /// Parses a UUIDv7 from a string, with or without hyphens
+        /// </summary>
+        /// <param name="uuid">The UUID string to parse</param>
+        /// <returns>A new UUID</returns>
+        /// <exception cref="ArgumentException">If the UUID is not provided</exception>
+        /// <exception cref="FormatException">If the UUID is not in the correct format</exception>
+        /// <exception cref="ArgumentOutOfRangeException">If the version number or variant number is incorrect</exception>
         public static Uuid7 Parse(string uuid)
         {
             if (uuid is null || uuid.Trim() == string.Empty)
@@ -101,7 +111,7 @@ namespace Costasdev.Uuidv7
 
             if (uuid.Length != 36 || uuid.Length != 32)
             {
-                throw new FormatException("UUID must be 36 characters long");
+                throw new FormatException("UUID must be 32 or 36 characters long");
             }
 
             uuid = uuid.Trim().ToLowerInvariant();
@@ -143,6 +153,13 @@ namespace Costasdev.Uuidv7
             );
         }
 
+        /// <summary>
+        /// Attempts to parse a UUID from a string, with or without hyphens.
+        /// </summary>
+        /// <seealso cref="Parse(string)"/>
+        /// <param name="uuid">The UUID string to parse</param>
+        /// <param name="result">The UUID if parsing was successful</param>
+        /// <returns>True if parsing was successful, false otherwise</returns>
         public static bool TryParse(string uuid, out Uuid7 result)
         {
             try
@@ -157,11 +174,27 @@ namespace Costasdev.Uuidv7
             }
         }
 
+        /// <summary>
+        /// Gets the timestamp of the UUID as a long
+        /// </summary>
+        public long GetTimestamp()
+        {
+            return (long)_timePart;
+        }
+
+        /// <summary>
+        /// Gets the timestamp of the UUID as a DateTimeOffset
+        /// </summary>
         public DateTimeOffset GetDateTimeOffset()
         {
             return DateTimeOffset.FromUnixTimeMilliseconds((long)_timePart);
         }
 
+        /// <summary>
+        /// Compares the UUID to another UUID, returning a value indicating whether the current UUID is equal to the other UUID
+        /// </summary>
+        /// <param name="other">The UUID to compare to</param>
+        /// <returns>True if the UUIDs are equal, false otherwise</returns>
         public bool Equals(Uuid7 other)
         {
             return _timePart == other._timePart && _randomPart.SequenceEqual(other._randomPart);
@@ -177,6 +210,10 @@ namespace Costasdev.Uuidv7
             return _timePart.CompareTo(other._timePart);
         }
 
+        /// <summary>
+        /// Returns the UUID as a 16-byte array
+        /// </summary>
+        /// <returns>A byte[] with size 16</returns>
         public byte[] AsByteArray()
         {
             var result = new byte[16];
@@ -198,11 +235,22 @@ namespace Costasdev.Uuidv7
             return result;
         }
 
+        /// <summary>
+        /// Returns the UUID as a string
+        /// </summary>
+        /// <returns>The UUID as a string</returns>
+        /// <seealso cref="AsString(bool, bool)"/>
         public override string ToString()
         {
             return AsString();
         }
 
+        /// <summary>
+        /// Returns the UUID as a string
+        /// </summary>
+        /// <param name="uppercase">Whether to use uppercase hex characters. Default is false</param>
+        /// <param name="includeHyphens">Whether to include hyphens in the UUID. Default is true</param>
+        /// <returns>The UUID as a string with the specified options</returns>
         public string AsString(bool uppercase = false, bool includeHyphens = true)
         {
             var hex = BitConverter.ToString(AsByteArray()).Replace("-", "");

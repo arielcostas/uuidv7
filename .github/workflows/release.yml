@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-    # Build the .NET standard 2.0 library
     name: Build and test
     runs-on: ubuntu-latest
     steps:
@@ -45,12 +44,16 @@ jobs:
         with:
           name: release
           path: src/Costasdev.Uuidv7/bin/Release/netstandard2.0
+      - name: Generate nuget package
+        run: dotnet pack src/Costasdev.Uuidv7/Costasdev.Uuidv7.csproj --configuration Release --output ./packages -p:PackageVersion=${{ github.ref_name }}
       - name: Publish package to nuget.org
-        run: dotnet nuget push src/Costasdev.Uuidv7/bin/Release/netstandard2.0/Costasdev.Uuidv7.dll --api-key ${{ secrets.NUGET_API_KEY }}
-      - name: Authenticate to GitHub
-        run: dotnet nuget add source --username arielcostas --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github https://nuget.pkg.github.com/arielcostas/index.json
-      - name: Publish package to GitHub
-        run: dotnet nuget push src/Costasdev.Uuidv7/bin/Release/netstandard2.0/Costasdev.Uuidv7.dll --api-key ${{ secrets.GITHUB_TOKEN }} --source github
-      - name: Publish release
+        run: dotnet nuget push packages/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
+      - name: Create release on GitHub
         uses: softprops/action-gh-release@v2.0.5
-
+        with:
+          files: packages/*.nupkg
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            Release notes for version ${{ github.ref_name }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
