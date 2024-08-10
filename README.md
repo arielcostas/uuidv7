@@ -1,8 +1,8 @@
 # uuidv7
 
-![Build status](https://img.shields.io/github/actions/workflow/status/arielcostas/uuidv7/build.yml?branch=main&style=for-the-badge)
-![Nuget version](https://img.shields.io/nuget/v/Costasdev.Uuidv7?style=for-the-badge)
-![Licence](https://img.shields.io/github/license/arielcostas/uuidv7?style=for-the-badge)
+[![Build status](https://img.shields.io/github/actions/workflow/status/arielcostas/uuidv7/build.yml?branch=main&style=for-the-badge)](https://github.com/arielcostas/uuidv7/actions/workflows/build.yml)
+[![Nuget version](https://img.shields.io/nuget/v/Costasdev.Uuidv7?style=for-the-badge)](https://www.nuget.org/packages/Costasdev.Uuidv7)
+[![Licence](https://img.shields.io/github/license/arielcostas/uuidv7?style=for-the-badge)](https://github.com/arielcostas/uuidv7/blob/main/LICENCE)
 
 C# implementation of UUID version 7 per [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562#name-uuid-version-7).
 
