@@ -53,7 +53,7 @@ jobs:
       - name: Publish package to nuget.org
         run: dotnet nuget push packages/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
       - name: Create release on GitHub
-        uses: softprops/action-gh-release@v2.1.0
+        uses: softprops/action-gh-release@v2.2.0
         with:
           files: packages/*.nupkg
           token: ${{ secrets.GITHUB_TOKEN }}
