@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.2.2
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4.2.0
+        uses: actions/setup-dotnet@v4.3.1
         with:
           dotnet-version: 8.0.X
       - name: Install dependencies
@@ -40,7 +40,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.2.2
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4.2.0
+        uses: actions/setup-dotnet@v4.3.1
         with:
           dotnet-version: 8.0.X
       - name: Download artifact
