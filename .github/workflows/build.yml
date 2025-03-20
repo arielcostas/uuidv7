@@ -7,23 +7,28 @@ concurrency:
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
     branches:
-    - main  
+      - main
+
+strategy:
+  matrix:
+    dotnet-version: [ 8.0.x, 9.0.x, netstandard2.0 ]
 
 jobs:
   build:
-    # Build the .NET standard 2.0 library
     name: Build and test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
+
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4.2.0
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.X
+          dotnet-version: ${{ matrix.dotnet-version }}
+
       - name: Cache dependencies
         uses: actions/cache@v4.1.2
         with:
@@ -31,9 +36,12 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
             ${{ runner.os }}-nuget
+
       - name: Install dependencies
         run: dotnet restore
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
+
       - name: Test with dotnet
         run: dotnet test --configuration Release ./src/Costasdev.Uuidv7.Tests/Costasdev.Uuidv7.Tests.csproj
