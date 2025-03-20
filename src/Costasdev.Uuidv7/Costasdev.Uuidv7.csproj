@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
     <OutputType>Library</OutputType>
     <RootNamespace>Costasdev.Uuidv7</RootNamespace>
     
@@ -13,7 +13,7 @@
     <PackageId>Costasdev.Uuidv7</PackageId>
     <Authors>Ariel Costas Guerrero</Authors>
     <Description>UUIDv7 implementation for .NET, based on RFC 9562.</Description>
-    <Copyright>Copyright (c) 2024 Ariel Costas Guerrero</Copyright>
+    <Copyright>Copyright (c) 2024-2025 Ariel Costas Guerrero</Copyright>
     <PackageProjectUrl>https://github.com/arielcostas/uuidv7</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/arielcostas/uuidv7</RepositoryUrl>

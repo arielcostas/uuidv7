@@ -1,8 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
 namespace Costasdev.Uuidv7
 {
@@ -34,6 +37,7 @@ namespace Costasdev.Uuidv7
             {
                 throw new ArgumentOutOfRangeException(nameof(_randomPart), "Random part must be 10 bytes long");
             }
+
             if (randomPart[0] >> 4 != 7)
             {
                 throw new ArgumentOutOfRangeException(nameof(_randomPart), "Version number must be 7");
@@ -82,7 +86,7 @@ namespace Costasdev.Uuidv7
                 rng.GetBytes(randomBytes);
             }
 
-            // Overwrite bits 48-51 (4 bits) with the version number (7) 
+            // Overwrite bits 48-51 (4 bits) with the version number (7)
             randomBytes[0] = (byte)((randomBytes[6] & 0x0F) | 0x70);
 
             // Overwrite bits 64-65 (2 bits) with the variant (10)
@@ -94,6 +98,65 @@ namespace Costasdev.Uuidv7
             );
         }
 
+#if NET8_0_OR_GREATER
+        /// <summary>
+        /// Parses a UUIDv7 from a string, with or without hyphens
+        /// </summary>
+        /// <param name="uuid">The UUID string to parse</param>
+        /// <returns>A new UUID</returns>
+        /// <exception cref="ArgumentException">If the UUID is not provided</exception>
+        /// <exception cref="FormatException">If the UUID is not in the correct format</exception>
+        /// <exception cref="ArgumentOutOfRangeException">If the version number or variant number is incorrect</exception>
+        public static Uuid7 Parse(string uuid)
+        {
+            if (string.IsNullOrWhiteSpace(uuid))
+            {
+                throw new ArgumentException(nameof(uuid));
+            }
+
+            Span<char> chars = stackalloc char[32];
+
+            // Remove unwanted characters
+            int i = 0;
+            foreach (char c in uuid)
+            {
+                if (c is ' ' or '-')
+                {
+                    continue;
+                }
+
+                chars[i] = c;
+                i++;
+            }
+
+            if (i != 32)
+            {
+                throw new FormatException($"UUID has invalid size of {i}");
+            }
+
+            // Parse the 32 hex chars into 16 bytes
+            Span<byte> bytes = stackalloc byte[16];
+            for (i = 0; i < 32; i += 2)
+            {
+                bytes[i / 2] = ParseHexByte(chars[i], chars[i+1]);
+            }
+
+            var millisLow = MemoryMarshal.Read<int>(bytes[2..]);
+            var millisHigh = MemoryMarshal.Read<short>(bytes);
+
+            if (BitConverter.IsLittleEndian)
+            {
+                millisLow = IPAddress.NetworkToHostOrder(millisLow);
+                millisHigh = IPAddress.NetworkToHostOrder(millisHigh);
+            }
+
+            var randomPart = bytes.Slice(6, 10).ToArray();
+            return new Uuid7(
+                (ulong)((long)millisHigh << 32) | (uint)millisLow,
+                randomPart
+            );
+        }
+#else
         /// <summary>
         /// Parses a UUIDv7 from a string, with or without hyphens
         /// </summary>
@@ -109,7 +172,7 @@ namespace Costasdev.Uuidv7
                 throw new ArgumentException(nameof(uuid));
             }
 
-            if (uuid.Length != 36 || uuid.Length != 32)
+            if (uuid.Length != 36 && uuid.Length != 32)
             {
                 throw new FormatException("UUID must be 32 or 36 characters long");
             }
@@ -138,20 +201,21 @@ namespace Costasdev.Uuidv7
             var millisLow = BitConverter.ToInt32(bytes, 2);
             var millisHigh = BitConverter.ToInt16(bytes, 0);
 
-            var randomPart = new byte[10];
-            Buffer.BlockCopy(bytes, 6, randomPart, 0, 10);
-
             if (BitConverter.IsLittleEndian)
             {
                 millisLow = IPAddress.NetworkToHostOrder(millisLow);
                 millisHigh = IPAddress.NetworkToHostOrder(millisHigh);
             }
 
+            var randomPart = new byte[10];
+            Buffer.BlockCopy(bytes, 6, randomPart, 0, 10);
+
             return new Uuid7(
                 (ulong)((long)millisHigh << 32) | (uint)millisLow,
                 randomPart
             );
         }
+#endif
 
         /// <summary>
         /// Attempts to parse a UUID from a string, with or without hyphens.
@@ -263,6 +327,19 @@ namespace Costasdev.Uuidv7
 
             var builder = new StringBuilder(hex).Insert(20, '-').Insert(16, '-').Insert(12, '-').Insert(8, '-');
             return builder.ToString();
+        }
+
+        private static byte ParseHexByte(char high, char low)
+        {
+            int highNibble = (high >= '0' && high <= '9')
+                ? high - '0'
+                : (char.ToLowerInvariant(high) - 'a' + 10);
+
+            int lowNibble = (low >= '0' && low <= '9')
+                ? low - '0'
+                : (char.ToLowerInvariant(low) - 'a' + 10);
+
+            return (byte)((highNibble << 4) | lowNibble);
         }
     }
 }
