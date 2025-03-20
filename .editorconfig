@@ -1,0 +1,58 @@
+﻿root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# XML project files
+[*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj}]
+indent_size = 2
+
+# XML config files
+[*.{props,targets,ruleset,config,nuspec,resx,vsixmanifest,vsct}]
+indent_size = 2
+
+# YAML config files
+[*.{yml,yaml}]
+tab_width = 2
+indent_size = 2
+
+# JSON config files
+[*.json]
+tab_width = 2
+indent_size = 2
+insert_final_newline = false
+
+[*.cs]
+tab_width = 4
+indent_size = 4
+
+dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
+
+csharp_style_var_when_type_is_apparent = false:suggestion
+csharp_style_var_elsewhere = true:suggestion
+
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+dotnet_style_qualification_for_method = false:suggestion
+dotnet_style_qualification_for_event = false:suggestion
+
+dotnet_style_readonly_field = true:suggestion
+
+csharp_style_namespace_declarations = file_scoped:suggestion
+csharp_prefer_static_local_function = true:suggestion
+
+csharp_prefer_braces = true:suggestion
+csharp_space_between_method_call_parentheses = false:suggestion
+
+csharp_new_line_before_open_brace = all
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+
+resharper_unused_auto_property_accessor_global_highlighting = none
+dotnet_code_quality_unused_parameters = all
+
+dotnet_diagnostic.IDE0005.severity = error # Remove unused 'using' statements
+dotnet_diagnostic.IDE0290.severity = none # Disable suggesting to use primary constructors

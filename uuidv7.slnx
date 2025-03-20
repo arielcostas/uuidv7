@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/Costasdev.Uuidv7.Demo/Costasdev.Uuidv7.Demo.csproj" />
+  <Project Path="src/Costasdev.Uuidv7.Tests/Costasdev.Uuidv7.Tests.csproj" />
+  <Project Path="src/Costasdev.Uuidv7/Costasdev.Uuidv7.csproj" />
+</Solution>
