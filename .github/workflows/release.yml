@@ -35,7 +35,7 @@ jobs:
         run: dotnet pack src/Costasdev.Uuidv7/Costasdev.Uuidv7.csproj --configuration Release --output ./packages -p:PackageVersion=${{ github.ref_name }} --no-build
 
       - name: Upload package artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: nuget-packages
           path: ./packages/*.nupkg
